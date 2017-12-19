@@ -1,0 +1,219 @@
+1. A student of this institute has a roll number, name and intelligence. After the foundation day week, the
+student is given a list of assignments. Each assignment belongs to a particular course and has a base marks.
+The marks obtained by a student for a particular assignment is always the base marks times the intelligence of
+the person. The assignment has a difficulty factor and an assignment can only be attempted by students whose
+intelligence is more than the assignment’s difficulty factor. The assignments have a deadline that is given as a
+date (combination of day, month and year). The student attempts the assignment as per deadline, with the
+earliest approaching deadline first. In case of a tie, the assignment with a smaller assignment ID is attempted
+first.
+Print the list of assignments submitted by the student in the same order as attempted by the student, the marks given
+in each assignment, and the total marks of the student. You must minimally implement a student class, a date class
+and an assignment class. 
+
+
+vInput Format:
+First line is the number of test cases
+First line is the roll number, name of the student (single string
+without spaces) and intelligence separated by a space
+Second line is the total number of assignments, N
+Each subsequent line gives the assignment ID (string), course ID
+(string), deadline day, deadline month, deadline year, base marks
+and difficulty. 
+Sample Input
+1
+IIT2016001 Owais 5
+7
+A0 IOOM332C 20 8 2017 10 1
+A1 SMAT330C 5 9 2017 16 2
+A2 ITOC330C 31 8 2017 20 7
+A3 SMAT330C 25 8 2017 5 8
+A4 IOPS332C 28 8 2017 8 4
+A5 IOOM332C 10 9 2017 8 5
+A6 EMIP332C 6 9 2017 10 6
+
+
+Output format
+The first line prints the roll number and
+student’s name
+Then variable lines follow, one for each
+assignment. Each line prints the assignment
+ID, course ID and the marks obtained.
+The last line prints the total marks obtained. 
+Sample Output
+IIT2016001 Owais
+A0 IOOM332C 50
+A4 IOPS332C 40
+A1 SMAT330C 80
+A5 IOOM332C 40
+210
+
+
+--------------------------------
+SOLUTION
+-----------------------------------
+
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+public class TestClass {
+ 
+ 
+	public static class sortbycal implements Comparator<Assignment>{//this does sorting by nearest deadline date for the type 0 students 
+		@Override
+		public int compare(Assignment o1, Assignment o2) {
+		if( o1.getcal().getyear() != o2.getcal().getyear())
+		{ // compare by year
+		return o1.getcal().getyear()-o2.getcal().getyear();
+		}
+		if(o1.getcal().getyear()== o2.getcal().getyear()){
+		if(o1.getcal().getmonth() != o2.getcal().getmonth() ){//compare by month
+		return o1.getcal().getmonth()-o2.getcal().getmonth();
+		}
+		if( o1.getcal().getmonth() == o2.getcal().getmonth() ){
+		if(o1.getcal().getdate() != o2.getcal().getdate())//compare by date
+		{
+		return o1.getcal().getdate()-o2.getcal().getdate();
+		}
+		if(o1.getcal().getdate() == o2.getcal().getdate())
+		{
+			  char a=o1.getid().charAt(0);
+			  char b=o2.getid().charAt(0);
+				if(a > 64 && a < 123 && b>64 && b<123){//to check if first character is char or int 
+				       if(a > b) 
+				      {
+				          return a-b;
+				      }
+				     if(a == b) //if first character is equal then compare the numbers
+				     {
+				         return Integer.parseInt(o1.getid().substring(1))-Integer.parseInt(o2.getid().substring(1));
+				     }
+				  }
+			   else //if all are integers then we can directly compare the numbers
+			      return Integer.parseInt(o1.getid())-Integer.parseInt(o2.getid());    
+			     }
+		  }
+		}
+	return -1;
+		}	
+	}
+  
+  
+  public static class Date{//Date class contains date ,month,year
+	private int date;
+		private int month;
+		private int year;
+		public Date(int date,int month,int year){//constructor of Date class
+		this.date=date;
+		this.month=month;
+		this.year=year;
+		}
+		public Date(){
+		    ;
+		}
+		public int getdate(){
+		return date;
+		}
+		public int getmonth(){
+		return month;
+		}
+		public int getyear()
+		{
+		return year;
+		}	
+	}
+public static class Assignment { //assignment class containing id,subject,Date(date,month,year),marks in the subject
+private String id;
+private String sub;
+private Date cc;
+private int marks;
+public Assignment(String id,String sub,Date cc,int marks){//constructor of assignment class
+this.id=id;
+this.sub=sub;
+this.cc=cc;
+this.marks=marks;
+} 
+//get and set functions for assignment class
+public String getid(){
+return id;
+}
+public String getsub(){
+return sub;
+}
+ 
+public Date getcal(){
+return cc;
+}
+public int getmarks(){
+return marks;
+}
+}
+public static class Student{//student class is formed which contains roll number,intelligence and name of student
+ 
+private String roll;
+private String name;
+private int intel;
+public Student(String roll,String name,int intel){
+this.name=name;
+this.roll=roll;
+this.intel=intel;
+}
+ 
+//since name ,roll ,intelligence are private so to access them outside of this class get function is used which is public
+public String getroll(){
+return roll;
+}
+public String getname(){
+return name;
+}
+public int getintel(){
+return intel;
+}
+}
+public static void main(String[] args) {
+Scanner s=new Scanner(System.in);
+int t=s.nextInt();//t=testcases
+for(int i=0;i<t;i++){
+String roll=s.next();
+String name =s.next();
+int intel=s.nextInt();
+ 
+Student stu=new Student(roll,name,intel);//an  object stu of student class is created
+int n=s.nextInt(); //n=number of assignments
+int x=0;
+ArrayList<Assignment> aa=new ArrayList<Assignment>();//an arrayList to store those assignments which satisfy the condition of question
+ 
+ Date cc[]=new Date[100];
+for(int j=0;j<n;j++){ //to scan all assignments and their attributes
+    
+String id=s.next();
+String sub=s.next();
+int date=s.nextInt();
+int month=s.nextInt();
+int year=s.nextInt(); 
+int marks =s.nextInt();
+int val=s.nextInt();
+if(val <= intel){
+cc[x]=new Date(date,month,year);
+aa.add(new Assignment(id,sub,cc[x],marks));//add elements in arraylist
+ 
+//aa need to be sorted by Deadline first 
+//if getcal() is same then id is used for sorting 
+x++;
+} 
+}
+Collections.sort(aa,new sortbycal());//sort the arraylist according to deadline date
+int total_s=0;
+System.out.println(stu.getroll()+" "+stu.getname()); //print name and roll number 
+for(int z=0;z<x;z++){ 
+        // to print id ,subject and score=(marks*intelligence of the student
+System.out.println(aa.get(z).getid()+" "+aa.get(z).getsub()+" "+aa.get(z).getmarks()*stu.getintel());
+total_s=total_s+aa.get(z).getmarks()*stu.getintel();
+}
+System.out.println(total_s);//print total marks in all subject
+ 
+}
+ 
+}
+}
+Language: Java
