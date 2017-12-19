@@ -1,0 +1,419 @@
+3. For question 2, assume that a plagiarism list is published. If a student plagiarizes in any assignment of a
+course X, he/she gets a zero in all assignments in the particular course X. So a student who plagiarizes in
+IOOM332C gets a zero in all IOOM332C assignments. 
+
+
+Input Format:
+First line is the number of test cases
+Next line is m, the number of students
+Next m lines have the roll number, name of the student (single string
+without spaces), intelligence and type separated by a space
+Next line is the total number of assignments, N
+Each subsequent line gives the assignment ID (string), course ID (string),
+deadline day, deadline month, deadline year, base marks and difficulty.
+The next line is P, the number of plagiarism lists
+Each of the P lines thereafter mention a roll number and an assignment
+ID, in which plagiarism occurred.
+
+
+Output format
+For all m students:
+The first line prints the roll number
+and student’s name
+Then variable lines follow, one for
+each assignment. Each line prints the
+assignment ID, course ID and the
+marks obtained.
+The last line prints the total marks
+obtained.
+
+Sample Input
+---------------
+1
+3
+IIT2016001 Owais 5 0
+LIT2016001 Sahil 7 1
+IRM2016001 Adarsh 3
+7
+A0 IOOM332C 20 8 2017 10 1
+A1 SMAT330C 5 9 2017 16 2
+A2 ITOC330C 31 8 2017 20 7
+A3 SMAT330C 25 8 2017 5 8
+A4 IOPS332C 28 8 2017 8 4
+A5 IOOM332C 10 9 2017 8 5
+A6 EMIP332C 6 9 2017 10 6
+2
+LIT2016001 IOOM332C
+IRM2016001 IOOM332C
+
+
+Sample Output::::::
+-----------------
+IIT2016001 Owais
+A0 IOOM332C 50
+A4 IOPS332C 20
+A1 SMAT330C 10
+A5 IOOM332C 25
+105
+LIT2016001 Sahil
+A2 ITOC330C 140
+A1 SMAT330C 112
+A0 IOOM332C 0
+A6 EMIP332C 70
+A4 IOPS332C 56
+A5 IOOM332C 0
+378
+IRM2016001 Adarsh
+A0 IOOM332C 0
+A1 SMAT330C 48
+48
+
+--------------------------
+       SOLUTION
+--------------------------
+
+import java.util.*;
+ 
+public class TestClass {
+    public static class sortbyid implements Comparator<Assignment>{//this does sorting by id for the type 2 students 
+		@Override
+		public int compare (Assignment o1,Assignment o2){ //the compare function compares assignments by ID 
+		
+			 char a=o1.getid().charAt(0);
+			 char b=o2.getid().charAt(0);
+				if(a > 64 && a < 123 && b>64 && b<123){ //to check if first character is char or int 
+				       if(a > b)
+				      {
+				          return a-b;
+				      }
+				     if(a == b) //if first character is equal then compare the numbers 
+				     {
+				         return Integer.parseInt(o1.getid().substring(1))-Integer.parseInt(o2.getid().substring(1));
+				     }
+				  }
+			   else //if all are integers then we can directly compare the numbers 
+			   
+			      return Integer.parseInt(o1.getid())-Integer.parseInt(o2.getid());    
+			     
+			return -1;
+		}
+	}
+	public static class sortbymarks implements Comparator<Assignment>{//this does sorting by maximum basemarks for the type 1 students 
+		@Override
+		public int compare (Assignment o1,Assignment o2){
+			if(o1.getmarks() != o2.getmarks()){
+				return o2.getmarks()-o1.getmarks();
+			}
+			if(o1.getmarks()==o2.getmarks()){
+			 char a=o1.getid().charAt(0);
+			  char b=o2.getid().charAt(0);
+				if(a > 64 && a < 123 && b>64 && b<123){//to check if first character is char or int 
+				       if(a > b)
+				      {
+				          return a-b;
+				      }
+				     if(a == b) //if first character is equal then compare the numbers 
+				     {
+				         return Integer.parseInt(o1.getid().substring(1))-Integer.parseInt(o2.getid().substring(1));
+				     }
+				  }
+			   else //if all are integers then we can directly compare the numbers
+			      return Integer.parseInt(o1.getid())-Integer.parseInt(o2.getid());    
+			     }
+			return -1;
+		}
+	}
+	public static class sortbycal implements Comparator<Assignment>{//this does sorting by nearest deadline date for the type 0 students 
+		@Override
+		public int compare(Assignment o1, Assignment o2) {
+		if( o1.getcal().getyear() != o2.getcal().getyear())
+		{ // compare by year
+		return o1.getcal().getyear()-o2.getcal().getyear();
+		}
+		if(o1.getcal().getyear()== o2.getcal().getyear()){
+		if(o1.getcal().getmonth() != o2.getcal().getmonth() ){//compare by month
+		return o1.getcal().getmonth()-o2.getcal().getmonth();
+		}
+		if( o1.getcal().getmonth() == o2.getcal().getmonth() ){
+		if(o1.getcal().getdate() != o2.getcal().getdate())//compare by date
+		{
+		return o1.getcal().getdate()-o2.getcal().getdate();
+		}
+		if(o1.getcal().getdate() == o2.getcal().getdate())
+		{
+			  char a=o1.getid().charAt(0);
+			  char b=o2.getid().charAt(0);
+				if(a > 64 && a < 123 && b>64 && b<123){//to check if first character is char or int 
+				       if(a > b) 
+				      {
+				          return a-b;
+				      }
+				     if(a == b) //if first character is equal then compare the numbers
+				     {
+				         return Integer.parseInt(o1.getid().substring(1))-Integer.parseInt(o2.getid().substring(1));
+				     }
+				  }
+			   else //if all are integers then we can directly compare the numbers
+			      return Integer.parseInt(o1.getid())-Integer.parseInt(o2.getid());    
+			     }
+		  }
+	}
+	return -1;
+		}	
+	}
+	
+    	public static class Date{//Date class contains date ,month,year
+	private int date;
+		private int month;
+		private int year;
+		public Date(int date,int month,int year){//constructor of Date class
+		this.date=date;
+		this.month=month;
+		this.year=year;
+		}
+		public Date(){
+		    ;
+		}
+		public int getdate(){
+		return date;
+		}
+		public int getmonth(){
+		return month;
+		}
+		public int getyear()
+		{
+		return year;
+		}	
+	}
+	public static class Student{
+	    //student class to store their rollnumber ,name,intelligence ,type
+	    
+		private String roll;
+		private String name;
+		private int intel;
+		private int type;
+		
+		public Student(String roll,String name,int intel,int type){
+		    //constructor of Student class
+		this.name=name;
+		this.roll=roll;
+		this.intel=intel;
+		this.type=type;
+		}
+		public Student(){
+		    ;
+		}
+		//getter and setter used to access these private class attributes outside this class 
+		public String getroll(){
+		return roll;
+		}
+		public String getname(){
+		return name;
+		}
+		public int getintel(){
+		return intel;
+		}
+		public int gettype(){
+			return type;
+		}
+	}
+	public static class plagList{
+	    
+	    //plag list contains the roll number and subject id which is used to distinguish
+	    //students shortlisted in plagrism
+	    
+	  private  String rollN;
+	  private String subId;
+	    
+	   public plagList(String rollN,String subId){//constructor
+	       this.rollN=rollN;
+	       this.subId=subId;
+	   } 
+	   
+	   public plagList(){
+	       ;
+	   }
+	  public String getrollN(){
+	      return rollN;
+	  }  
+	  
+	  public String getsubId(){
+	      return subId;
+	  }  
+	  
+	}
+	
+	public static class Assignment {//Assignment class contains id,subject date ,time ,month ,marks and difficulty value 
+		private String id;
+	    private	String sub;
+		private Date cc;
+		private int marks;
+		private int val;
+		
+		public Assignment(String id,String sub,Date cc,int marks,int val){//constructor of Assignment class
+		this.id=id;
+		this.sub=sub;
+		this.cc=cc;
+		this.marks=marks;
+		this.val=val;
+		}
+		public Assignment(){//inbuilt constructor also kept 
+		    ;
+		}
+		
+     //to get and set the private attributes of assignment class
+		public String getid(){ 
+		return id;
+		}
+		public String getsub(){
+		return sub;
+		}
+ 
+		public Date getcal(){
+		return cc;
+		}
+		public void setmarks(int m){
+		    marks=m;
+		}
+		public int getmarks(){
+		return marks;
+		}
+		public int getval(){
+			return val;
+		}
+	}
+	  public static class Batch{//batch class formed which contains student type attribute
+    private Student std[]=new Student[1000];
+     int i;
+     public Batch(){
+         ;
+     }
+    //set and get functions for batch class
+    public void setstudent(Student st,int i){
+       std[i]=st;
+    }
+    public Student getstudent(int i){
+        return std[i];
+    }
+}
+	     public static void main(String[] args) {
+	   Scanner s=new Scanner(System.in);
+	int t=s.nextInt();
+	//t=testcases
+	for(int i=0;i<t;i++){//loop for number of testcases
+		 int n=s.nextInt();//n=number of studennts
+		 Batch b=new Batch();
+             for(int j=0;j<n;j++){
+             
+             //loop upto number of students and scan their properties 
+           	 String roll=s.next();
+        	 String name=s.next();
+        	 int intel=s.nextInt();
+        	 int type=s.nextInt();
+        	 Student ss=new Student(roll,name,intel,type);
+        	 b.setstudent(ss,j);
+         }
+         ArrayList<Assignment> aa=new ArrayList<Assignment>();
+         
+         // an arraylist of type assignment 
+         
+         int v=s.nextInt();//v=number of assignments
+         
+         for(int k=0;k<v;k++){//loop upto number of assignments
+         
+        	 String id=s.next();
+        	 String sub=s.next();
+        	 int date=s.nextInt();
+        	 int month=s.nextInt();
+        	 int year=s.nextInt(); 
+        	 int marks =s.nextInt();
+        	 int val=s.nextInt();
+        	 
+        	 Date cc=new Date(date,month,year);//date month and year are kept in one class named Date
+        	
+        	aa.add(new Assignment(id,sub,cc,marks,val));//the assignment attributes are added to the arraylist
+       	 }
+       	 
+       	 int plag=s.nextInt();//plag =number of students shortlisted in plagrism
+       	 ArrayList<plagList> p=new ArrayList<plagList>();// a plagList type arraylist is created
+       	 
+       	 for(int it=0;it<plag;it++){//
+       	     String rr=s.next();
+       	     String st=s.next();
+       	     p.add(new plagList(rr,st));//plagList elemnts are added to p named Arraylist
+       	 }
+       	 
+       	 
+         for(int ji=0;ji<n;ji++){
+             
+             //n=number of students
+        	 System.out.println(b.getstudent(ji).getroll()+" "+b.getstudent(ji).getname());
+        	 int x=b.getstudent(ji).gettype();
+        	 int y=b.getstudent(ji).getintel();
+        	ArrayList<Assignment> bb=new ArrayList<Assignment>();
+        	for(int cx=0;cx<aa.size();cx++){
+        	    
+        	    //first the comparison is done on the basis of inteligence of students 
+        	    //if intelligence is more than or equal to the difficulty then question can be solved
+        	    
+        		if(aa.get(cx).getval() <= y){
+        			bb.add(aa.get(cx));// the value for which question can be solved is kept in bb named arraylist
+        			
+        		}
+        	}
+        	if(x == 0){
+        		Collections.sort(bb,new sortbycal());//bb named arraylist is sorted on basis of calender or say by date month year
+        	}
+        	if(x==1){
+        		Collections.sort(bb,new sortbymarks());//bb named arraylist is sorted on basis of marks
+        	}
+        	if(x==2){
+        		Collections.sort(bb,new sortbyid());//bb named arraylist is sorted on basis of id
+        	}
+        	int mm[]=new int[100];
+        	
+        	// mm named array is made to store the marks of subjects which are made 0 when found in plagrism 
+        	
+        	for(int it=0;it<plag;it++){
+        	if(b.getstudent(ji).getroll().equals(p.get(it).getrollN())){// student's roll is compared to that of the roll 
+        	//shortlisted in plagrism list
+        	    
+        	       for(int ii=0;ii<bb.size();ii++){
+        	           if(p.get(it).getsubId().equals(bb.get(ii).getsub())){
+        	               //subject id of plag list is compared to the list of subjects student has
+        	               
+        	               mm[it]=bb.get(ii).getmarks();//the marks of the plagrised subject is set stored
+        	               bb.get(ii).setmarks(0);//the marks of the plagrised subject is set zero 
+        	           }
+        	       }
+             	}
+        	}
+        	int sum=0;
+        	
+        	for(int ci=0;ci<bb.size();ci++){
+        	    
+        	    //to print output this loop runs upto size of array list bb because it has the course details 
+        	    //which satisfy our conditions
+        	    
+        		System.out.println(bb.get(ci).getid()+" "+bb.get(ci).getsub()+" "+y*bb.get(ci).getmarks());
+        	sum=sum+y*bb.get(ci).getmarks();
+        	}
+        	System.out.println(sum);//to print total sum of subjects studied by student
+        	
+        	for(int u=0;u<plag;u++){
+        	    
+        	    // this loop resets the value of subject which is shortlised in plagrism so that the marks of other 
+        	    //students is not affected
+        	   	if(b.getstudent(ji).getroll().equals(p.get(u).getrollN())){
+        	    
+        	       for(int ii=0;ii<bb.size();ii++){
+        	           if(p.get(u).getsubId().equals(bb.get(ii).getsub())){
+        	                      bb.get(ii).setmarks(mm[u]);//marks is reset from the value stored in mm[] array
+        	           }
+        	       }
+             	}
+        	}
+         }
+   } 
+  }
+}
